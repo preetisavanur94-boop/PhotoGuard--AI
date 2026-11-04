@@ -1,0 +1,222 @@
+* {
+  box-sizing: border-box;
+}
+:root {
+  color-scheme: light;
+  --ink: #172033;
+  --muted: #64748b;
+  --line: #dce3ee;
+  --paper: #f4f7fb;
+  --white: #fff;
+  --blue: #3157d5;
+  --pale: #eaf0ff;
+}
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+}
+.shell {
+  width: min(920px, calc(100% - 32px));
+  margin: 40px auto;
+}
+header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.brand-mark {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 17px;
+  background: var(--blue);
+  color: white;
+  font-weight: 850;
+  font-size: 20px;
+}
+.eyebrow,
+.step {
+  color: var(--blue);
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  font-weight: 800;
+}
+h1 {
+  margin: 2px 0;
+  font-size: clamp(28px, 5vw, 42px);
+  letter-spacing: -0.04em;
+}
+h1 span {
+  color: var(--blue);
+}
+.subtitle,
+.muted,
+.hint,
+.small-note {
+  color: var(--muted);
+}
+.subtitle {
+  margin: 3px 0;
+  font-size: 14px;
+}
+.intro,
+.result,
+.how,
+footer {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 24px;
+  margin-top: 22px;
+}
+.intro {
+  background: var(--pale);
+  border-color: #d6e0ff;
+}
+h2 {
+  margin: 0 0 9px;
+  font-size: 21px;
+}
+.intro p,
+.result p,
+footer p {
+  line-height: 1.6;
+  margin: 0;
+  color: #526078;
+}
+.upload-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 22px;
+}
+.upload-card {
+  min-width: 0;
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--white);
+  border: 1.5px dashed #b9c6db;
+  border-radius: 18px;
+  padding: 20px;
+  cursor: pointer;
+}
+.upload-card:hover {
+  border-color: var(--blue);
+}
+.upload-card strong {
+  font-size: 17px;
+}
+.upload-card input {
+  width: 100%;
+  font-size: 13px;
+}
+.upload-card img {
+  max-width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #f1f4f9;
+}
+button {
+  width: 100%;
+  border: 0;
+  border-radius: 13px;
+  margin-top: 18px;
+  padding: 16px 20px;
+  background: var(--blue);
+  color: white;
+  font-size: 15px;
+  font-weight: 750;
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+button span {
+  float: right;
+  font-size: 20px;
+  line-height: 15px;
+}
+.small-note {
+  text-align: center;
+  font-size: 12px;
+}
+.result {
+  border-left: 5px solid var(--blue);
+}
+.result .score {
+  font-size: 48px;
+  font-weight: 850;
+  color: var(--blue);
+  letter-spacing: -0.05em;
+  margin: 12px 0 0;
+}
+.result .label {
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+.result .disclaimer {
+  font-size: 12px;
+  margin-top: 12px;
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.steps div {
+  background: #f5f7fb;
+  padding: 14px;
+  border-radius: 13px;
+}
+.steps b {
+  display: block;
+  color: var(--blue);
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.steps strong {
+  font-size: 14px;
+}
+.steps p {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+footer {
+  background: #fffaf0;
+  border-color: #f0dfb6;
+}
+footer strong {
+  color: #8a5a00;
+}
+footer p {
+  font-size: 13px;
+  margin-top: 7px;
+}
+@media (max-width: 640px) {
+  .shell {
+    margin: 22px auto;
+  }
+  .upload-grid {
+    grid-template-columns: 1fr;
+  }
+  .steps {
+    grid-template-columns: 1fr 1fr;
+  }
+  .intro,
+  .result,
+  .how,
+  footer {
+    padding: 19px;
+  }
+}

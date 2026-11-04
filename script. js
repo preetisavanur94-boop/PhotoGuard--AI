@@ -1,0 +1,43 @@
+const form = document.getElementById("compare-form");
+const button = document.getElementById("analyze");
+const result = document.getElementById("result");
+
+function preview(inputId, imageId) {
+  const input = document.getElementById(inputId);
+  const image = document.getElementById(imageId);
+  input.addEventListener("change", () => {
+    const file = input.files[0];
+    if (!file) { image.hidden = true; image.removeAttribute("src"); return; }
+    image.src = URL.createObjectURL(file);
+    image.hidden = false;
+  });
+}
+preview("original", "original-preview");
+preview("suspected", "suspected-preview");
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!form.reportValidity()) return;
+  const data = new FormData(form);
+  button.disabled = true;
+  button.textContent = "Analyzing…";
+  result.innerHTML = '<p class="eyebrow">ANALYSIS REPORT</p><h2>Comparing images…</h2><p class="muted">Please wait.</p>';
+
+  try {
+    const response = await fetch("/compare", { method: "POST", body: data });
+    const report = await response.json();
+    if (!response.ok) throw new Error(report.error || "Comparison failed.");
+
+    result.innerHTML = `
+      <p class="eyebrow">ANALYSIS REPORT</p>
+      <div class="score">${report.score}%</div>
+      <p class="label">${report.label}</p>
+      <p>${report.explanation}</p>
+      <p class="disclaimer">Method: ${report.method}. ${report.disclaimer}</p>`;
+  } catch (error) {
+    result.innerHTML = `<p class="eyebrow">ANALYSIS REPORT</p><h2>Unable to compare</h2><p>${error.message}</p>`;
+  } finally {
+    button.disabled = false;
+    button.innerHTML = 'Analyze image similarity <span>→</span>';
+  }
+});

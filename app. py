@@ -1,0 +1,92 @@
+from flask import Flask, render_template, request, jsonify
+from PIL import Image, UnidentifiedImageError
+import numpy as np
+import io
+
+app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024  # 8 MB per request
+
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
+
+def valid_image(file):
+    return file and "." in file.filename and file.filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def load_rgb(file_storage):
+    image = Image.open(io.BytesIO(file_storage.read())).convert("RGB")
+    image.thumbnail((1200, 1200))
+    return image
+
+def dhash(image, size=8):
+    """Create a 64-bit difference hash from a resized grayscale image."""
+    small = image.convert("L").resize((size + 1, size), Image.Resampling.LANCZOS)
+    pixels = np.asarray(small, dtype=np.int16)
+    differences = pixels[:, 1:] > pixels[:, :-1]
+    bits = differences.flatten()
+    value = 0
+    for bit in bits:
+        value = (value << 1) | int(bit)
+    return value
+
+def hash_similarity(image_a, image_b):
+    a, b = dhash(image_a), dhash(image_b)
+    distance = (a ^ b).bit_count()
+    return 1 - distance / 64
+
+def histogram_similarity(image_a, image_b):
+    # Compare normalized RGB histograms. This is a supporting signal, not identity recognition.
+    scores = []
+    for channel in range(3):
+        hist_a = np.asarray(image_a.resize((128, 128))).reshape(-1, 3)[:, channel]
+        hist_b = np.asarray(image_b.resize((128, 128))).reshape(-1, 3)[:, channel]
+        bins_a, _ = np.histogram(hist_a, bins=32, range=(0, 256), density=True)
+        bins_b, _ = np.histogram(hist_b, bins=32, range=(0, 256), density=True)
+        denominator = np.maximum(bins_a, bins_b).sum()
+        scores.append(float(np.minimum(bins_a, bins_b).sum() / denominator) if denominator else 0)
+    return sum(scores) / len(scores)
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+@app.route("/compare", methods=["POST"])
+def compare():
+    original_file = request.files.get("original")
+    suspected_file = request.files.get("suspected")
+
+    if not valid_image(original_file) or not valid_image(suspected_file):
+        return jsonify({"error": "Please upload two PNG, JPG, JPEG or WEBP images."}), 400
+
+    try:
+        original = load_rgb(original_file)
+        suspected = load_rgb(suspected_file)
+    except (UnidentifiedImageError, OSError, ValueError):
+        return jsonify({"error": "One of the uploaded files is not a readable image."}), 400
+
+    hash_score = hash_similarity(original, suspected)
+    color_score = histogram_similarity(original, suspected)
+    score = round((0.8 * hash_score + 0.2 * color_score) * 100)
+
+    if score >= 85:
+        label = "High visual similarity"
+        explanation = "The images share many visual features. Review them manually."
+    elif score >= 65:
+        label = "Possible visual similarity"
+        explanation = "Some visual features are similar. Further review is recommended."
+    else:
+        label = "Low visual similarity"
+        explanation = "Fewer matching visual features were found. This does not rule out misuse."
+
+    return jsonify({
+        "score": score,
+        "label": label,
+        "explanation": explanation,
+        "method": "Difference hash (dHash) + RGB histogram",
+        "disclaimer": "This is an experimental similarity estimate, not proof of image ownership, identity, consent or misuse."
+    })
+
+@app.errorhandler(413)
+def too_large(_error):
+    return jsonify({"error": "Upload is too large. Keep the combined request under 8 MB."}), 413
+
+if __name__ == "__main__":
+    app.run(debug=True)

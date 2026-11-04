@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PhotoGuard AI | Photo Safety</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="brand-mark">PG</div>
+      <div>
+        <p class="eyebrow">SOCIAL GOOD • IMAGE SAFETY</p>
+        <h1>PhotoGuard <span>AI</span></h1>
+        <p class="subtitle">A prototype for checking visual similarity between photographs.</p>
+      </div>
+    </header>
+
+    <section class="intro">
+      <h2>Protect what matters.</h2>
+      <p>Compare a protected original image with a suspected copy. Your images are processed for this comparison and are not saved by this demo.</p>
+    </section>
+
+    <form id="compare-form">
+      <section class="upload-grid">
+        <label class="upload-card" for="original">
+          <span class="step">01 / ORIGINAL</span>
+          <strong>Protected photograph</strong>
+          <span class="hint">Choose the original image</span>
+          <input id="original" name="original" type="file" accept="image/png,image/jpeg,image/webp" required>
+          <img id="original-preview" alt="Original image preview" hidden>
+        </label>
+        <label class="upload-card" for="suspected">
+          <span class="step">02 / CHECK</span>
+          <strong>Suspected photograph</strong>
+          <span class="hint">Choose the image to compare</span>
+          <input id="suspected" name="suspected" type="file" accept="image/png,image/jpeg,image/webp" required>
+          <img id="suspected-preview" alt="Suspected image preview" hidden>
+        </label>
+      </section>
+      <button id="analyze" type="submit">Analyze image similarity <span>→</span></button>
+      <p class="small-note">PNG, JPG or WEBP • Maximum combined upload: 8 MB</p>
+    </form>
+
+    <section id="result" class="result" aria-live="polite">
+      <p class="eyebrow">ANALYSIS REPORT</p>
+      <h2>Ready when you are</h2>
+      <p class="muted">Upload both images to view the comparison result.</p>
+    </section>
+
+    <section class="how">
+      <h2>How it works</h2>
+      <div class="steps">
+        <div><b>01</b><strong>Upload</strong><p>Select two images.</p></div>
+        <div><b>02</b><strong>Process</strong><p>Generate visual fingerprints.</p></div>
+        <div><b>03</b><strong>Compare</strong><p>Compare hash and colour features.</p></div>
+        <div><b>04</b><strong>Review</strong><p>Read the score and verify manually.</p></div>
+      </div>
+    </section>
+
+    <footer>
+      <strong>Important limitation</strong>
+      <p>PhotoGuard is an educational prototype. Similarity scores are not proof of theft, identity or wrongdoing. It does not monitor social-media platforms, identify people, locate users, or contact police. If you suspect image misuse, preserve relevant evidence and seek help from a trusted adult or the appropriate reporting channel.</p>
+    </footer>
+  </main>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
